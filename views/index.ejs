@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog</title>
+  <link rel="stylesheet" href="/styles/main.css">
+  <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+</head>
+
+<body>
+  <div class="container">
+    <h1>My Blog</h1>
+    <a id="newPostBtn" href="/new">New Post</a>
+
+    <% if (posts.length > 0) { %>
+      <div style="margin-top: 20px;" class="actions">
+        <!-- <button class="delete" id="deleteAllBtn" style="background-color: red;">Delete All</button> -->
+        <a class="delete" href="/api/delete/all">Delete All</a>
+      </div>
+
+      <ul id="postsList">
+        <% posts.forEach(post => { %>
+          <li>
+            <h2><%= post.title %></h2>
+            <small><%= post.date %></small>
+            <p><%= post.content %></p>
+            <small>By: <%= post.author %></small>
+            <a class="edit" href="/edit/<%= post.id %>">Edit</a>
+            <a class="delete" href="/api/posts/delete/<%= post.id %>">Delete</a>
+          </li>
+        <% }); %>
+      </ul>
+
+    <% } else { %>
+      <div style="margin-top: 20px;" class="no-posts">
+        <p>No posts available. Start by creating a new one!</p>
+      </div>
+    <% } %>
+
+  </div>
+
+  <!-- <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const deleteAllBtn = document.getElementById("deleteAllBtn");
+
+      if (deleteAllBtn) {
+        deleteAllBtn.addEventListener("click", async () => {
+          if (confirm("Are you sure you want to delete all posts?")) {
+            try {
+              const response = await fetch("/api/posts/delete/all", { method: "DELETE" });
+              if (response.ok) {
+                location.reload();
+              } else {
+                alert("Failed to delete all posts.");
+              }
+            } catch (error) {
+              alert("An error occurred while deleting posts.");
+            }
+          }
+        });
+      }
+    });
+  </script> -->
+
+</body>
+
+</html>
