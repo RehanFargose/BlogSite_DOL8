@@ -13,6 +13,8 @@ const PORT = process.env.port || 3000;
 
 // PostgreSQL config
 const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }, // required by Render
   user: process.env.user,
   host: process.env.host,
   database: process.env.database,
