@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import pg from "pg";
-import axios from "axios";
+// import axios from "axios";
 import 'dotenv/config';
 import path from "path";
 import { fileURLToPath } from "url";
@@ -12,14 +12,14 @@ const PORT = process.env.port || 3000;
 
 
 // PostgreSQL config
-const db = new pg.Client({
+const pool = new pg.Pool({
   user: process.env.user,
   host: process.env.host,
   database: process.env.database,
   password: process.env.password,
   port: process.env.db_port || 5432,
 });
-db.connect();
+// db.connect();
 
 // Support __dirname with ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -38,23 +38,23 @@ app.use(cors());
 let posts = [];
 
 async function getPosts() {
-  const result = await db.query("SELECT * FROM blog ORDER BY id ASC;");
+  const result = await pool.query("SELECT * FROM blog ORDER BY id ASC;");
   posts = result.rows;
 }
 
 async function findPost(postId) {
-  const result = await db.query("SELECT * FROM blog WHERE id=$1", [postId]);
+  const result = await pool.query("SELECT * FROM blog WHERE id=$1", [postId]);
   return result.rows[0];
 }
 
 async function createPost(title, content, author) {
-  await db.query("INSERT INTO blog(title, content, author) VALUES($1, $2, $3)", [title, content, author]);
+  await pool.query("INSERT INTO blog(title, content, author) VALUES($1, $2, $3)", [title, content, author]);
   await getPosts();
 }
 
 async function editPost(id, title, content, author, date) {
   const post = await findPost(id);
-  await db.query(
+  await pool.query(
     "UPDATE blog SET title=$1, content=$2, author=$3, date=$4 WHERE id=$5",
     [title || post.title, content || post.content, author || post.author, date, id]
   );
@@ -62,12 +62,12 @@ async function editPost(id, title, content, author, date) {
 }
 
 async function deletePost(id) {
-  await db.query("DELETE FROM blog WHERE id=$1", [id]);
+  await pool.query("DELETE FROM blog WHERE id=$1", [id]);
   await getPosts();
 }
 
 async function deleteAll() {
-  await db.query("DELETE FROM blog");
+  await pool.query("DELETE FROM blog");
   await getPosts();
 }
 
